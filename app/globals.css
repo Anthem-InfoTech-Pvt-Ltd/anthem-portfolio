@@ -6,7 +6,9 @@
   height: 40vmin;
   pointer-events: none;
 }
-
+.grecaptcha-badge {
+  visibility: hidden !important;
+}
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
