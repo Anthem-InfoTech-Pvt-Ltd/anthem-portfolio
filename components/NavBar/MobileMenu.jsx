@@ -1,6 +1,6 @@
 import React,{useEffect} from 'react';
 import PropTypes from "prop-types"
-import Logo from '../../components/logo/Logo';
+import Logo from '../logo/Logo';
 import MobileNavMenu from './sub-component/MobileNavMenu';
 
 const MobileMenu = ({ show, onClose }) => {

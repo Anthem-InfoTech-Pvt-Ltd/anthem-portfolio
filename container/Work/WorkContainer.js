@@ -58,73 +58,94 @@ const WorkContainer = ({ classOption }) => {
         try {
           setLoading(true);
           const allProjects = await getProjects();
-          console.log("fetched projcts before filterig:", allProjects)
-          setProjects(allProjects);
+          console.log("fetched projects before filtering:", allProjects)
+          
+          // ✅ NEW: Published projects from API (/api/website/get-all-publish-projects)
+          const rawList = Array.isArray(allProjects)
+            ? allProjects
+            : (allProjects?.data || allProjects?.projects || []);
 
-          let filtered = allProjects;
-// if (slug) {
-//   const normalize = (str) =>
-//     str
-//       ?.toLowerCase()
-//       .trim()
-//       .replace(/[.\-_#+]/g, " ")  // convert . - _ # + → spaces
-//       .replace(/\s+/g, " ");       // collapse multiple spaces
-//   const slugTerm = normalize(slug);
-//   const slugWords = slugTerm.split(" "); // ["node","js"]
+          const publishedProjects = rawList.filter(
+            project => project.isPublished === undefined || project.isPublished === true || project.isPublished === 1
+          );
+          
+          setProjects(publishedProjects);
 
-//   filtered = allProjects.filter((project) => {
-//     // normalize all fields before searching
-//     const name = normalize(project.projectName || "");
-//     const category = normalize(project.projectCategory || "");
-//     const tech = normalize(project.technolgies || "");
-//     const desc = normalize(project.description || "");
-//     const subCat = normalize(project.projectSubCategory || "");
-//     const smallDesc = normalize(project.smallDesciption || "");
+          let filtered = publishedProjects;
+          // ============================================================
 
-//     const fullString = `${name} ${category} ${tech} ${desc} ${subCat} ${smallDesc}`;
+          // ============================================================
+          // OLD CODE: Pehle saare projects set ho rahe the (Commented)
+          // ============================================================
+          // setProjects(allProjects);
+          // let filtered = allProjects;
+          // ============================================================
 
-//     // Check every slug word inside fullString
-//     return slugWords.every((w) => fullString.includes(w));
-//   });
-// }
+          // ============================================================
+          // OLD SLUG FILTERING CODE (Commented - Keep as is)
+          // ============================================================
+          // if (slug) {
+          //   const normalize = (str) =>
+          //     str
+          //       ?.toLowerCase()
+          //       .trim()
+          //       .replace(/[.\-_#+]/g, " ")  // convert . - _ # + → spaces
+          //       .replace(/\s+/g, " ");       // collapse multiple spaces
+          //   const slugTerm = normalize(slug);
+          //   const slugWords = slugTerm.split(" "); // ["node","js"]
+          //
+          //   filtered = allProjects.filter((project) => {
+          //     // normalize all fields before searching
+          //     const name = normalize(project.projectName || "");
+          //     const category = normalize(project.projectCategory || "");
+          //     const tech = normalize(project.technolgies || "");
+          //     const desc = normalize(project.description || "");
+          //     const subCat = normalize(project.projectSubCategory || "");
+          //     const smallDesc = normalize(project.smallDesciption || "");
+          //
+          //     const fullString = `${name} ${category} ${tech} ${desc} ${subCat} ${smallDesc}`;
+          //
+          //     // Check every slug word inside fullString
+          //     return slugWords.every((w) => fullString.includes(w));
+          //   });
+          // }
+          // ============================================================
 
+          // ============================================================
+          // NEW SLUG FILTERING CODE (Active - Published projects ke andar)
+          // ============================================================
+          const normalize = (str = "") =>
+            str
+              .toLowerCase()
+              .replace(/<[^>]*>/g, " ")    
+              .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()+]/g, " ") 
+              .replace(/\s+/g, " ")
+              .trim();
 
- 
-const normalize = (str = "") =>
-  str
-    .toLowerCase()
-    .replace(/<[^>]*>/g, " ")    
-    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()+]/g, " ") 
-    .replace(/\s+/g, " ")
-    
-    .trim();
+          if (slug) {
+            const slugWords = normalize(slug).split(" ");
 
-if (slug) {
+            filtered = publishedProjects.filter((project) => {
+              const searchableText = normalize(`
+                ${project.projectName}
+                ${project.projectCategory}
+                ${project.projectSubCategory}
+                ${project.smallDesciption}
+                ${project.description}
+              `);
 
+              const technologies = (project.technolgies || "")
+                .split(",")
+                .map(t => normalize(t));
 
-  const slugWords = normalize(slug).split(" ");
-
-  filtered = allProjects.filter((project) => {
-    const searchableText = normalize(`
-      ${project.projectName}
-      ${project.projectCategory}
-      ${project.projectSubCategory}
-      ${project.smallDesciption}
-      ${project.description}
-    `);
-
-    const technologies = (project.technolgies || "")
-      .split(",")
-      .map(t => normalize(t));
-
-    // ✅ loose + accurate match
-    return slugWords.some(word =>
-      searchableText.includes(word) ||
-      technologies.some(tech => tech.includes(word))
-    );
-  });
-}
-
+              // ✅ loose + accurate match
+              return slugWords.some(word =>
+                searchableText.includes(word) ||
+                technologies.some(tech => tech.includes(word))
+              );
+            });
+          }
+          // ============================================================
 
           setFilterProjects(filtered);
 
@@ -216,7 +237,9 @@ if (slug) {
         word.charAt(0).toUpperCase() + word.slice(1)
       )
       .join(" ");
-const cleanSlug = slug?.replace(/-/g, " ");
+      
+  const cleanSlug = slug?.replace(/-/g, " ");
+
   return (
     <div className={`section section-padding-t90 ${classOption}`} style={{paddingTop:"20px",paddingBottom:"20px"}}>
       <div className="container">
@@ -245,16 +268,14 @@ const cleanSlug = slug?.replace(/-/g, " ");
             <p className="text mt-2">
               Please explore our other case studies and services.
             </p>
-<a
-  href="/OurWork"
-  className="btn btn btn-bottom mt-xl-12 mt-lg-8 mt-md-6 mt-4"
-   data-hover=" View All Projects"
-  style={{ background: "#0e6497" }}
->
-  View All Projects
-</a>
-
-           
+            <a
+              href="/OurWork"
+              className="btn btn btn-bottom mt-xl-12 mt-lg-8 mt-md-6 mt-4"
+              data-hover=" View All Projects"
+              style={{ background: "#0e6497" }}
+            >
+              View All Projects
+            </a>
           </div>
         ) : (
           <InfiniteScroll

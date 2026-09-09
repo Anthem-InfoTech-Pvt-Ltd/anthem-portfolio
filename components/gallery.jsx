@@ -74,7 +74,7 @@ export const Gallery = (props) => {
     try {
       // Fetch data from API
       const response = await fetch(
-        "http://anthemwebsiteapi.antheminfotech.com/api/Portfolio/GetAllProjects",
+        "http://localhost:5000/api/website/get-all-publish-projects",
         {
           method: "GET",
           headers: {
