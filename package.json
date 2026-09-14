@@ -7,10 +7,10 @@
     "node": ">=18.17.0"
   },
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "node app.js",
-    "start:next": "next start"
+    "dev": "node api.js && next dev --turbopack",
+    "build": "node api.js && next build",
+    "start": "node api.js && node app.js",
+    "start:next": "node api.js && next start"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.1.0",
@@ -25,7 +25,7 @@
     "clsx": "^2.1.1",
     "d3": "^7.9.0",
     "d3-cloud": "^1.2.7",
-    "next": "15.3.1",
+    "next": "15.3.8",
     "next-auth": "^4.24.14",
     "parallax-js": "^3.1.0",
     "prop-types": "^15.8.1",
