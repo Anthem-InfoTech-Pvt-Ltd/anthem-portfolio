@@ -1,6 +1,6 @@
 import axiosInstance from "../lib/axiosConfig";
 
-export const projectsapi = async () => {
+{/*export const projectsapi = async () => {
   try {
     const response = await axiosInstance.get(
       "https://managementapinodejs.anthemwork.com/api/website/get-all-publish-projects"
@@ -17,11 +17,11 @@ export const projectsapi = async () => {
     console.error("Error fetching projects:", error);
     throw error;
   }
-};
-{/*export const projectsapi = async () => {
+};*/}
+export const projectsapi = async () => {
   const response = await axiosInstance.get("/api/Portfolio/GetAllProjects");
   return response.data;
-};*/}
+};
 
 export const projectbyIdapi = async (projectID) => {
   try {
